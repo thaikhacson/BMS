@@ -1,0 +1,111 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.38.0.0
+Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: SON PC, HCMUTE, LIC=8VRJ7-E1I5G-TGU7T-R37IR-LX2RY-Q2UVP
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.38.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.19
+Assembler:       Armasm.exe V6.19
+Linker/Locator:  ArmLink.exe V6.19
+Library Manager: ArmAr.exe V6.19
+Hex Converter:   FromElf.exe V6.19
+CPU DLL:         SARMCM3.DLL V5.38.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.1.0.0
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+D:\Desktop\DATN\CODE\bms.uvprojx
+Project File Date:  05/02/2024
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
+Rebuild target 'Target 1'
+compiling dma.c...
+compiling delay.c...
+compiling adc.c...
+compiling kalman.c...
+compiling gpio.c...
+compiling flash.c...
+main.c(334): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
+        for(int i=0; i<((num+1)/2); i++){
+            ^
+main.c(343): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
+        for(int i = 0; i < 2; i++) {
+            ^
+main.c(361): warning: incompatible pointer types passing 'uint8_t (*)[2]' (aka 'unsigned char (*)[2]') to parameter of type 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+        Flash_WriteNumByte(ADDR_DATA, &data, sizeof(data));
+                                      ^~~~~
+main.c(329): note: passing argument to parameter 'data' here
+void Flash_WriteNumByte(uint32_t address, uint8_t *data, int num){
+                                                   ^
+main.c(405): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
+                for (int i = 0; i < 3; i++) {
+                     ^
+main.c(406): warning: passing 'char *' to parameter of type 'uint8_t *' (aka 'unsigned char *') converts between pointers to integer types where one is of the unique plain 'char' type and the other is not [-Wpointer-sign]
+                        SPI_SendData(SPI2, &user_data[i], 1);
+                                           ^~~~~~~~~~~~~
+./Library/Inc\spi.h(109): note: passing argument to parameter 'pTxBuffer' here
+void SPI_SendData(SPI_Regdef_t* pSPIx, uint8_t* pTxBuffer, uint32_t Len);
+                                                ^
+5 warnings generated.
+compiling main.c...
+assembling startup_stm32f10x_md.s...
+Library/Src/spi.c(95): warning: expression result unused [-Wunused-value]
+                        (uint16_t*)pTxBuffer++; 
+                        ^          ~~~~~~~~~~~
+Library/Src/spi.c(122): warning: expression result unused [-Wunused-value]
+                        (uint16_t*)pRxBuffer++; 
+                        ^          ~~~~~~~~~~~
+Library/Src/spi.c(259): warning: expression result unused [-Wunused-value]
+                        (uint16_t*)pSPIHandle->pTxBuffer++;
+                        ^          ~~~~~~~~~~~~~~~~~~~~~~~
+Library/Src/spi.c(289): warning: expression result unused [-Wunused-value]
+                        (uint16_t*)pSPIHandle->pRxBuffer--;
+                        ^          ~~~~~~~~~~~~~~~~~~~~~~~
+4 warnings generated.
+compiling spi.c...
+compiling system_stm32f10x.c...
+linking...
+Program Size: Code=6972 RO-data=304 RW-data=12 ZI-data=1724  
+".\Objects\bms.axf" - 0 Error(s), 9 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.9.0.pack
+                ARM.CMSIS.5.9.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.6.0
+
+Package Vendor: Keil
+                https://www.keil.com/pack/Keil.STM32F1xx_DFP.2.4.1.pack
+                Keil.STM32F1xx_DFP.2.4.1
+                STMicroelectronics STM32F1 Series Device Support, Drivers and Examples
+   * Component: Startup Version: 1.0.0
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/Device/STM32F103C8
+  ./RTE/_Target_1
+  C:/Users/PC/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+  C:/Users/PC/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.6.0
+
+   * Component: Keil::Device:Startup:1.0.0
+      Source file:   Device/Source/ARM/startup_stm32f10x_md.s
+      Source file:   Device/Source/ARM/STM32F1xx_OPT.s
+      Source file:   Device/Source/system_stm32f10x.c
+      Include file:  RTE_Driver/Config/RTE_Device.h
+Build Time Elapsed:  00:00:01
+</pre>
+</body>
+</html>

@@ -3,8 +3,6 @@
 
 #include "stm32f1xx.h"
 
-extern volatile uint32_t TimeDelay;
-
 void System_Clock_Cfg(void);
 void Systick_Initialize(void);
 void delay_us(uint32_t time);

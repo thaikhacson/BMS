@@ -27,36 +27,37 @@ Project File Date:  05/02/2024
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-compiling dma.c...
 compiling delay.c...
-compiling adc.c...
+compiling dma.c...
 compiling kalman.c...
+compiling adc.c...
 compiling gpio.c...
 compiling flash.c...
-main.c(334): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
+main.c(180): warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C2x [-Wdeprecated-non-prototype]
+void SOC_Init(SOC_init, C_init) {
+     ^
+main.c(279): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
         for(int i=0; i<((num+1)/2); i++){
             ^
-main.c(343): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
+main.c(288): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
         for(int i = 0; i < 2; i++) {
             ^
-main.c(361): warning: incompatible pointer types passing 'uint8_t (*)[2]' (aka 'unsigned char (*)[2]') to parameter of type 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+main.c(305): warning: incompatible pointer types passing 'uint8_t (*)[2]' (aka 'unsigned char (*)[2]') to parameter of type 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
         Flash_WriteNumByte(ADDR_DATA, &data, sizeof(data));
                                       ^~~~~
-main.c(329): note: passing argument to parameter 'data' here
+main.c(274): note: passing argument to parameter 'data' here
 void Flash_WriteNumByte(uint32_t address, uint8_t *data, int num){
                                                    ^
-main.c(405): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
-                for (int i = 0; i < 3; i++) {
-                     ^
-main.c(406): warning: passing 'char *' to parameter of type 'uint8_t *' (aka 'unsigned char *') converts between pointers to integer types where one is of the unique plain 'char' type and the other is not [-Wpointer-sign]
-                        SPI_SendData(SPI2, &user_data[i], 1);
-                                           ^~~~~~~~~~~~~
-./Library/Inc\spi.h(109): note: passing argument to parameter 'pTxBuffer' here
-void SPI_SendData(SPI_Regdef_t* pSPIx, uint8_t* pTxBuffer, uint32_t Len);
+main.c(328): warning: incompatible pointer types passing 'uint8_t[2]' (aka 'unsigned char[2]') to parameter of type 'uint32_t *' (aka 'unsigned int *') [-Wincompatible-pointer-types]
+        Flash_ReadData(ADDR_DATA, data);
+                                  ^~~~
+main.c(287): note: passing argument to parameter 'RxBuf' here
+void Flash_ReadData(uint32_t address, uint32_t *RxBuf) {
                                                 ^
 5 warnings generated.
 compiling main.c...
 assembling startup_stm32f10x_md.s...
+compiling system_stm32f10x.c...
 Library/Src/spi.c(95): warning: expression result unused [-Wunused-value]
                         (uint16_t*)pTxBuffer++; 
                         ^          ~~~~~~~~~~~
@@ -71,9 +72,8 @@ Library/Src/spi.c(289): warning: expression result unused [-Wunused-value]
                         ^          ~~~~~~~~~~~~~~~~~~~~~~~
 4 warnings generated.
 compiling spi.c...
-compiling system_stm32f10x.c...
 linking...
-Program Size: Code=6972 RO-data=304 RW-data=12 ZI-data=1724  
+Program Size: Code=8800 RO-data=304 RW-data=8 ZI-data=1776  
 ".\Objects\bms.axf" - 0 Error(s), 9 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -101,10 +101,10 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: Keil::Device:Startup:1.0.0
-      Source file:   Device/Source/ARM/startup_stm32f10x_md.s
-      Source file:   Device/Source/ARM/STM32F1xx_OPT.s
-      Source file:   Device/Source/system_stm32f10x.c
       Include file:  RTE_Driver/Config/RTE_Device.h
+      Source file:   Device/Source/ARM/STM32F1xx_OPT.s
+      Source file:   Device/Source/ARM/startup_stm32f10x_md.s
+      Source file:   Device/Source/system_stm32f10x.c
 Build Time Elapsed:  00:00:01
 </pre>
 </body>

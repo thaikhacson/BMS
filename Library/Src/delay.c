@@ -1,5 +1,11 @@
 #include "delay.h"
 
+// For store tick counts in us
+static volatile uint32_t usTicks;
+
+// For storing the total elapsed time in us since the program started
+static volatile uint64_t usTimeElapsed = 0;
+
 void System_Clock_Cfg(void)
 {
 	RCC->CR |= (1);   /* HSION */
@@ -19,21 +25,41 @@ void Systick_Initialize(void)
 	STK->CTRL |= 1;       /* enable systick */
 }
 
-void SysTick_Handler(void)
+void SysTick_Handler()
 {
-	if(TimeDelay > 0) TimeDelay--;
+	if (usTicks != 0)
+	{
+		usTicks--;
+	}
+	usTimeElapsed++;  // Increment the elapsed time counter
 }
 
-void delay_us(uint32_t time)
+void delay_us(uint32_t us)
 {
-	TimeDelay = time;
-	while(TimeDelay != 0);
+	// Reload us value
+	usTicks = us;
+	// Wait until usTick reaches zero
+	while (usTicks);
 }
 
 void delay_ms(uint32_t ms)
 {
-	while(ms--)
+	// Wait until ms reach zero
+	while (ms--)
 	{
+		// Delay 1ms
 		delay_us(1000);
 	}
+}
+
+// Function to get the total elapsed time in microseconds since the program started
+uint64_t micros()
+{
+	return usTimeElapsed;
+}
+
+// Optionally, you can create a function to get the time in milliseconds
+uint64_t millis()
+{
+	return usTimeElapsed / 1000;  // Convert microseconds to milliseconds
 }

@@ -8,7 +8,6 @@
 #include "string.h"
 #include "flash.h"
 
-
 #define VREF 								3.3
 #define SENSITIVITY					0.1
 #define BUF_SIZE						3
@@ -25,7 +24,8 @@
 #define C1									1498.26
 #define C2									65453.28
 
-volatile uint32_t TimeDelay;
+uint8_t data_SOC = 0, data_SOH = 0;
+
 
 /*------------------------------------------------------ RCC CONFIG ------------------------------------------------------*/
 
@@ -41,65 +41,30 @@ void RCC_Config() {
 
 /*------------------------------------------------------ GPIO CONFIG -----------------------------------------------------*/
 
-// Config GPIO ADC
 void GPIO_Config() {
-	GPIO_Handle_t GPIO_Config;
-	GPIO_Config.pGPIOx = GPIOA;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = INPUT;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 0;
-	GPIO_Config.GPIO_PinConfig.GPIO_IOType = ANALOG;
-	GPIO_Init(&GPIO_Config);
+
+	// Config GPIO ADC
+	GPIO_SetState(GPIOA, 0, INPUT, ANALOG);
+	GPIO_SetState(GPIOA, 1, INPUT, ANALOG);
+	GPIO_SetState(GPIOA, 2, INPUT, ANALOG);
 	
-	GPIO_Config.pGPIOx = GPIOA;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = INPUT;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 1;
-	GPIO_Config.GPIO_PinConfig.GPIO_IOType = ANALOG;
-	GPIO_Init(&GPIO_Config);
-	
-	GPIO_Config.pGPIOx = GPIOA;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = INPUT;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 2;
-	GPIO_Config.GPIO_PinConfig.GPIO_IOType = ANALOG;
-	GPIO_Init(&GPIO_Config);
+	// Config GPIO LED
+	GPIO_SetState(GPIOC, 14, OUTPUT_50MHZ, PUSH_PULL);
 	
 	//Config GPIO Interrupt
-	GPIO_Config.pGPIOx = GPIOA;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = IT_FE;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 3;
-	GPIO_Config.GPIO_PinConfig.GPIO_IOType = PUPD;
-	GPIO_Init(&GPIO_Config);
+	GPIO_SetState(GPIOB, 1, IT_FE, PUPD);
 	
-	GPIO_Config.pGPIOx = GPIOC;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = OUTPUT_50MHZ;
-	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = 13;
-	GPIO_Config.GPIO_PinConfig.GPIO_IOType = PUSH_PULL;
-	GPIO_Init(&GPIO_Config);
+	// Config SPI2 pin
+	GPIO_SetState(GPIOB, 12, OUTPUT_50MHZ, AF_PUSH_PULL);
+	GPIO_SetState(GPIOB, 13, OUTPUT_50MHZ, AF_PUSH_PULL);
+	GPIO_SetState(GPIOB, 14, OUTPUT_50MHZ, AF_PUSH_PULL);
+	GPIO_SetState(GPIOB, 15, OUTPUT_50MHZ, AF_PUSH_PULL);
 	
-//	// GPIO pins for MOSI, MISO, and SCK
-//	GPIO_Config.pGPIOx = GPIOB;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = OUTPUT_50MHZ;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 13;
-//	GPIO_Config.GPIO_PinConfig.GPIO_IOType = AF_PUSH_PULL;
-//	GPIO_Init(&GPIO_Config);
-//	
-//	GPIO_Config.pGPIOx = GPIOB;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = OUTPUT_50MHZ;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 14;
-//	GPIO_Config.GPIO_PinConfig.GPIO_IOType = AF_PUSH_PULL;
-//	GPIO_Init(&GPIO_Config);
-//	
-//	GPIO_Config.pGPIOx = GPIOB;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = OUTPUT_50MHZ;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 15;
-//	GPIO_Config.GPIO_PinConfig.GPIO_IOType = AF_PUSH_PULL;
-//	GPIO_Init(&GPIO_Config);
-//	
-//	// GPIO pin for SS
-//	GPIO_Config.pGPIOx = GPIOA;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinMode = OUTPUT_50MHZ;
-//	GPIO_Config.GPIO_PinConfig.GPIO_PinNumber = 12;
-//	GPIO_Config.GPIO_PinConfig.GPIO_IOType = PUSH_PULL;
-//	GPIO_Init(&GPIO_Config);
+	// Config SPI1 pin
+	GPIO_SetState(GPIOA, 4, OUTPUT_50MHZ, AF_PUSH_PULL);
+	GPIO_SetState(GPIOA, 5, OUTPUT_50MHZ, AF_PUSH_PULL);
+	GPIO_SetState(GPIOA, 6, OUTPUT_50MHZ, AF_PUSH_PULL);
+	GPIO_SetState(GPIOA, 7, OUTPUT_50MHZ, AF_PUSH_PULL);
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -207,80 +172,60 @@ float Temperature_Sensor() {
 
 /*----------------------------------------------------- ESTIMATE SOC ---------------------------------------------------*/
 
-//float SOC_init, C_init, currentC, previousC, I;
-//float currentSOC, previousSOC;
-//long previousTime = 0;
-//long currentTime = 0;
+float SOC_init, C_init, currentC, previousC, I;
+float currentSOC, previousSOC;
+long previousTime = 0;
+long currentTime = 0;
 
-//void SOC_Init(SOC_init, C_init) {
-//	currentSOC = SOC_init;
-//	currentC = C_init;
-//	
-//	currentTime = s();
-//}
+void SOC_Init(SOC_init, C_init) {
+	currentSOC = SOC_init;
+	currentC = C_init;
+}
 
-////double CalculateBatteryCapacity() {
-////	float I_current = Current_Sensor();
-////	float I_previous;
-////		
-////	float currentTime = s();
-////	
-////	if(currentTime - previousTime > 1) {
-////		previousTime = currentTime;
-////		
-////		currentC = (I_current - I_previous) / 3600;
-////	}
-////	
-////	return currentC;
-////}
+double CalculateBatteryCapacity(float current) {
+    float capacity = current * (currentTime - previousTime) / 3600; 
+    return capacity;
+}
 
-//double CalculateSOH(double current_capacity, double reference_capacity) {
-//	double SOH = (current_capacity / reference_capacity) * 100.0;
-//	return SOH;
-//}
+double CalculateSOH(double current_capacity, double reference_capacity) {
+	double SOH = (current_capacity / reference_capacity) * 100.0;
+	return SOH;
+}
 
-//float CalculateCurrent(float Q_current, float Q_previous, float delta_t) {
-//	return (Q_current - Q_previous) / delta_t;
-//}
-
-//void SOC_Calculate() {
-//	// Calculate current time
-//	// currentTime = millis();
-//	
-//	currentSOC = previousSOC + (I * (currentTime - previousTime)) / currentC;
-//	previousSOC = currentSOC;
-//	
-//	// Update C
-//	previousC = currentC;
-//	currentC = CalculateBatteryCapacity(10);
-//	
-//	// Updated to previous time
-//	previousTime = currentTime;
-//}
+double SOC_Calculate() {
+	currentSOC = previousSOC + (I * (currentTime - previousTime)) / currentC;
+	previousSOC = currentSOC;
+	
+	// Update C
+	previousC = currentC;
+	currentC = CalculateBatteryCapacity(I);
+	
+	return currentSOC;
+}
 
 /*---------------------------------------------------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------- SPI --------------------------------------------------------*/
 
-void SPI2_GPIOInit(void)
+void SPI1_Init(void)
 {
-	GPIO_Handle_t SPIPins;
-	SPIPins.pGPIOx = GPIOB;
-	SPIPins.GPIO_PinConfig.GPIO_PinMode = OUTPUT_10MHZ;
-	SPIPins.GPIO_PinConfig.GPIO_IOType = AF_PUSH_PULL;
-
-	/* SCLK*/
-	SPIPins.GPIO_PinConfig.GPIO_PinNumber = 13;
-	GPIO_Init(&SPIPins);
-	/* MOSI*/
-	SPIPins.GPIO_PinConfig.GPIO_PinNumber = 15;
-	GPIO_Init(&SPIPins);
-	/* MISO*/
-//	SPIPins.GPIO_PinConfig.GPIO_PinNumber = 14;
-//	GPIO_Init(&SPIPins);
-	/* NSS*/
-	SPIPins.GPIO_PinConfig.GPIO_PinNumber = 12;
-	GPIO_Init(&SPIPins);
+	SPI_Handle_t SPI1Handle;
+	SPI1Handle.pSPIx = SPI1;
+	SPI1Handle.SPI_PinConfig.SPI_BusConfig = SPI_BUS_CONFIG_FD;
+	SPI1Handle.SPI_PinConfig.SPI_DeviceMode = SPI_DEVICE_MODE_MASTER;
+	SPI1Handle.SPI_PinConfig.SPI_SclkSpeed = SPI_CLK_SPEED_DIV128;  // sclk 2MHZ
+	SPI1Handle.SPI_PinConfig.SPI_DFF = SPI_DFF_8BITS;
+	SPI1Handle.SPI_PinConfig.SPI_CPOL = SPI_CPOL_LOW;
+	SPI1Handle.SPI_PinConfig.SPI_CPHA = SPI_CPHA_LOW;
+	SPI1Handle.SPI_PinConfig.SPI_SSM = SPI_SSM_DI;  // hardware management
+	SPI1Handle.pTxBuffer = ((void*)0);
+	SPI1Handle.pRxBuffer = ((void*)0);
+	SPI1Handle.TxLen = 0;
+	SPI1Handle.RxLen = 0;
+	SPI1Handle.TxState = SPI_READY;
+	SPI1Handle.RxState = SPI_READY;
+	
+	SPI_Init(&SPI1Handle);
 }
 
 void SPI2_Init(void)
@@ -352,10 +297,9 @@ void Flash_ReadData(uint32_t address, uint32_t *RxBuf) {
 
 /*------------------------------------------------------ INTERRUPT ----------------------------------------------------*/
 
-uint8_t data[2] = {0x56, 0x59};
-
 void EXTI1_IRQHandler(void) {
 	// Write/Read Data on Memory Flash
+	uint8_t data[2] = {data_SOC, data_SOH};
 	Flash_Erase(ADDR_DATA);
 	Flash_Erase(ADDR_DATA + 1024);
 	Flash_WriteNumByte(ADDR_DATA, &data, sizeof(data));
@@ -364,50 +308,58 @@ void EXTI1_IRQHandler(void) {
 
 /*---------------------------------------------------------------------------------------------------------------------*/
 
+
 /*-------------------------------------------------------- MAIN -------------------------------------------------------*/
 
 int main() {
-	
 	RCC_Config();
 	GPIO_Config();
 	ADC_Config();
 	DMA_Config();
 	GPIO_IRQInteruptConfig(IRQ_EXTI1, ENABLE);
-	
-	int a = 13, b = 12, c = 31;
-	
 	Systick_Initialize();
-	char user_data[3] = {a, b, c};
-	SPI2_GPIOInit();
 	SPI2_Init();
+	SPI1_Init();
 	SPI_SSOEConfig(SPI2, ENABLE);
+	SPI_SSOEConfig(SPI1, ENABLE);
+	
+	// Initialize SOC from flash memory
+	uint8_t data[2];
+	Flash_ReadData(ADDR_DATA, data);
+	uint8_t SOC_init = data[0];
+	uint8_t SOH_init = data[1];
+	SOC_Init(SOC_init, 12000);
 	
 	// Kalman Filter
 	SimpleKalmanFilter(1, 2, 0.001, KALMAN_VOLTAGE);
 	SimpleKalmanFilter(1, 2, 0.001, KALMAN_CURRENT);
 	SimpleKalmanFilter(1, 2, 0.001, KALMAN_TEMPERATURE);
 	
-	// Write/Read Data on Memory Flash
-//	Flash_Erase(ADDR_DATA);
-//	Flash_Erase(ADDR_DATA + 1024);
-//	Flash_WriteNumByte(ADDR_DATA, &data, sizeof(data));
-//	Flash_ReadData(ADDR_DATA, RxBuf);
+	currentTime = millis();
 	
 	while(1) {
 		
 		// Sensor
 		Voltage_Sensor();
-		//user_data = Current_Sensor();
-		
+		Current_Sensor();
 		Temperature_Sensor();
 		
+		data_SOH = CalculateSOH(currentC, 12000);
+		data_SOC = SOC_Calculate();
+		
+		//SPI1 send data SOC
+		SPI_PeripheralControl(SPI1, ENABLE);
+		SPI_SendData(SPI1, &data_SOC, 1);
+		while (SPI_GetFlagStatus(SPI1, SPI_BUSY_FLAG));
+		SPI_PeripheralControl(SPI1, DISABLE);
+		
+		//SPI2 send data SOH
 		SPI_PeripheralControl(SPI2, ENABLE);
-		for (int i = 0; i < 3; i++) {
-			SPI_SendData(SPI2, &user_data[i], 1);
-			while (SPI_GetFlagStatus(SPI2, SPI_BUSY_FLAG));
-			delay_ms(100);
-		}
+		SPI_SendData(SPI2, &data_SOH, 1);
+		while (SPI_GetFlagStatus(SPI2, SPI_BUSY_FLAG));
 		SPI_PeripheralControl(SPI2, DISABLE);
+		delay_ms(100);
+		
 	}
 	
 }
